@@ -1,0 +1,14 @@
+{
+    "name": "Node.js",
+    "image": "node:14",
+    "forwardPorts": [3000],
+    "workspaceMount": "source=${workspaceFolder},target=/workspace,type=bind,consistency=cached",
+    "customizations": {
+        "vscode": {
+            "extensions": [],
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash"
+            }
+        }
+    }
+}

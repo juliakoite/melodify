@@ -3,133 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Music Generator</title>
+    <title>Melodify: Text to Music Generator</title>
     <style>
+        /* Font and colors */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+        
         body {
-            background-color: #1a1a1a;
-            color: #eee;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             margin: 0;
-            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            color: #333;
         }
 
         h1 {
-            color: #00ff00; /* Changed to green */
-            margin-top: 30px;
+            font-size: 2.5em;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            max-width: 600px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
             text-align: center;
+            transition: 0.3s;
+        }
+
+        .container:hover {
+            transform: scale(1.02);
+        }
+
+        .input-container {
+            margin-bottom: 25px;
         }
 
         label {
-            color: #ccc;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #1a1a2e;
         }
 
-        textarea, input[type="range"], button {
-            background-color: #333;
-            color: #eee;
-            border: none;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 5px 0;
-            display: block;
+        textarea {
             width: 100%;
+            background-color: #f7f7fc;
+            border: 2px solid #d1d9e6;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1em;
+            resize: vertical;
             box-sizing: border-box;
-            font-size: 16px;
+            transition: 0.3s;
         }
 
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 15px;
-            border-radius: 5px;
-            background-color: #555;
+        textarea:focus {
+            border-color: #0078aa;
+            box-shadow: 0px 0px 5px rgba(0, 120, 170, 0.3);
             outline: none;
         }
 
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            background-color: #00ff00; /* Changed to green */
-            cursor: pointer;
-        }
-
+        /* Button styles */
         button {
+            background-color: #0078aa;
+            border: none;
+            color: #fff;
+            padding: 12px 25px;
+            font-size: 1em;
+            border-radius: 25px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: 0.3s;
+            font-weight: bold;
+            margin: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         button:hover {
-            background-color: #555;
+            background-color: #005f7d;
         }
 
         button:active {
-            background-color: #444;
+            transform: scale(0.98);
         }
 
+        /* Range input style */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            margin-top: 10px;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            background: #d1d9e6;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        input[type=range]:focus::-webkit-slider-runnable-track {
+            background: #c1c9d6;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #0078aa;
+            cursor: pointer;
+            box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s;
+        }
+
+        input[type=range]:hover::-webkit-slider-thumb {
+            background: #005f7d;
+        }
+
+        /* Duration display */
+        #durationValue {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #1a1a2e;
+        }
+
+        /* Audio player styling */
         #musicPlayer {
             margin-top: 20px;
-        }
-
-        audio {
-            width: 100%;
         }
     </style>
 </head>
 <body>
-    <h1>Text to Music Generator 🎵</h1>
+    <div class="container">
+        <h1>Melodify: Text to Music Generator 🎵</h1>
 
-    <div>
-        <label for="description">Enter your description:</label><br>
-        <textarea id="description" name="description" rows="4" cols="50"></textarea>
+        <div class="input-container">
+            <label for="description">Enter your description:</label><br>
+            <textarea id="description" name="description" rows="4" placeholder="Describe the mood, genre, or theme of your music..."></textarea>
+        </div>
+
+        <div class="input-container">
+            <label for="duration">Select duration (in seconds): <span id="durationValue">10</span></label>
+            <input type="range" id="duration" name="duration" min="0" max="20" value="10">
+        </div>
+
+        <div class="button-group">
+            <a href="/auth/login"><button>Register/Login</button></a>
+            <button onclick="generateMusic()">Generate Music</button>
+        </div>
+
+        <div id="musicPlayer"></div>
     </div>
-
-    <div>
-        <label for="duration">Select time duration (in seconds):</label><br>
-        <input type="range" id="duration" name="duration" min="0" max="20" value="10"><br>
-        <span id="durationValue">10</span>
-    </div>
-
-    <button onclick="generateMusic()">Generate Music</button>
-
-    <div id="musicPlayer"></div>
 
     <script>
         function generateMusic() {
-            var description = document.getElementById('description').value;
-            var duration = document.getElementById('duration').value;
+            const description = document.getElementById('description').value;
+            const duration = document.getElementById('duration').value;
 
-            // Send description and duration to the backend for music generation
             fetch('/generate_music', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    description: description,
-                    duration: duration
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ description, duration })
             })
             .then(response => response.json())
             .then(data => {
-                var audio = document.createElement('audio');
+                // Create and display the audio player with the generated music
+                const audio = document.createElement('audio');
                 audio.controls = true;
-                //document.getElementById("generatedMusic").innerText = "Your description: " + data.prompt + "\nSelected audio duration: " + data.duration + " seconds";
-                var audioPlayer = document.getElementById("audioPlayer");
-                audioPlayer.src = "/generated_audio/audio_0.wav";
-                //audioPlayer.style.display = "block";
-                //var downloadLink = document.getElementById("downloadLink");
-                //downloadLink.href = "/generated_audio/audio_0.wav";
-                //downloadLink.style.display = "block";
+                audio.src = "/generated_audio/audio_0.wav"; // Placeholder URL
                 document.getElementById('musicPlayer').innerHTML = '';
                 document.getElementById('musicPlayer').appendChild(audio);
             });
         }
 
         // Update slider value display
-        var slider = document.getElementById("duration");
-        var output = document.getElementById("durationValue");
+        const slider = document.getElementById("duration");
+        const output = document.getElementById("durationValue");
         output.innerHTML = slider.value;
 
         slider.oninput = function() {
